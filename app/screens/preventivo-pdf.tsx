@@ -170,6 +170,31 @@ export default function PreventivoPDF() {
 
   useEffect(() => {
     builderState.nascondiPrezzi = nascondiPrezzi
+    builderState.cliente = clienteSelezionato
+      ? {
+          id: clienteSelezionato.id,
+          nome: clienteSelezionato.nome,
+          telefono: null,
+          email: null,
+          indirizzo: null,
+        }
+      : null
+    builderState.metodoPagamentoNessuno = metodoPagamentoNessuno
+    builderState.metodoPagamentoId = metodoPagamentoNessuno
+      ? null
+      : (metodoPagamentoSelezionato?.id ?? null)
+    builderState.abbonamentoAttivo = abbonamentoAttivo
+    builderState.abImporto = abImporto
+    builderState.abGiorno = abGiorno
+    builderState.abMeseInizio = abMeseInizio
+    builderState.abMensilita = abMensilita
+    builderState.abVisibileNelPDF = abVisibileNelPDF
+    builderState.pagamentoRateAttivo = pagamentoRateAttivo
+    builderState.rateNumero = rateNumero
+    builderState.rateGiornoScadenza = rateGiornoScadenza
+    builderState.rateMeseInizio = rateMeseInizio
+    builderState.rateVisibileNelPDF = rateVisibileNelPDF
+
     const timeout = setTimeout(() => {
       void (async () => {
         const userId = await currentUserId()
@@ -180,7 +205,23 @@ export default function PreventivoPDF() {
       })()
     }, 800)
     return () => clearTimeout(timeout)
-  }, [nascondiPrezzi])
+  }, [
+    nascondiPrezzi,
+    clienteSelezionato,
+    metodoPagamentoNessuno,
+    metodoPagamentoSelezionato,
+    abbonamentoAttivo,
+    abImporto,
+    abGiorno,
+    abMeseInizio,
+    abMensilita,
+    abVisibileNelPDF,
+    pagamentoRateAttivo,
+    rateNumero,
+    rateGiornoScadenza,
+    rateMeseInizio,
+    rateVisibileNelPDF,
+  ])
 
   const importoTotaleNum = importo_totale
     ? (parseImportoEuro(String(importo_totale)) ?? 0)
@@ -224,6 +265,7 @@ export default function PreventivoPDF() {
       abImporto,
       abGiorno,
       abMeseInizio: parseInt(abMeseInizio, 10) || 0,
+      abMensilita,
       pagamentoRateAttivo,
       rateVisibileNelPDF,
       rateImportoTotale: importoRate,

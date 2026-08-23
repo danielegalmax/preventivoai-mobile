@@ -1,7 +1,20 @@
 import { BuilderMemoryState } from './types'
 import { meseCorrenteString } from 'previcloud-shared'
 
-export const builderState: BuilderMemoryState = {
+/** Cliente in memoria condivisa builder ↔ preventivo-pdf (campi minimi + optional del tipo Cliente). */
+export type BuilderClienteMemoria = {
+  id: string
+  nome: string
+  telefono: string | null
+  email: string | null
+  indirizzo: string | null
+} | null
+
+export type BuilderState = BuilderMemoryState & {
+  cliente: BuilderClienteMemoria
+}
+
+export const builderState: BuilderState = {
   voci: [],
   nomeCliente: '',
   noteExtra: '',
@@ -28,6 +41,7 @@ export const builderState: BuilderMemoryState = {
   scontoAttivo: false,
   scontoTipo: 'percentuale',
   scontoValore: '',
+  cliente: null,
 }
 
 export function resetBuilderState() {
@@ -57,4 +71,5 @@ export function resetBuilderState() {
   builderState.scontoAttivo = false
   builderState.scontoTipo = 'percentuale'
   builderState.scontoValore = ''
+  builderState.cliente = null
 }

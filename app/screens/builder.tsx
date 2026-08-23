@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
@@ -104,6 +104,7 @@ export default function Builder() {
   const bozzaGestitaRef = useRef(false)
   const bloccoSalvataggioBozzaRef = useRef(false)
   const clienteBozzaVerificatoRef = useRef(false)
+  const primoFocusBuilderRef = useRef(true)
   const [avvisoBozza, setAvvisoBozza] = useState<string | null>(null)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   const [pagamentoImportato, setPagamentoImportato] = useState('')
@@ -205,7 +206,68 @@ export default function Builder() {
     builderState.rateVisibileNelPDF = rateVisibileNelPDF
     builderState.metodoPagamentoNessuno = metodoPagamentoNessuno
     builderState.metodoPagamentoId = metodoPagamentoNessuno ? null : (metodoPagamentoSelezionato?.id ?? null)
-  }, [voci, nomeCliente, noteExtra, includiIva, trasferte, mostraTrasferte, nuovaSpesaNome, nuovaSpesaImporto, nuoviKm, scontoAttivo, scontoTipo, scontoValore, abbonamentoAttivo, abImporto, abGiorno, abMeseInizio, abMensilita, abVisibileNelPDF, pagamentoRateAttivo, rateNumero, rateGiornoScadenza, rateMeseInizio, rateVisibileNelPDF, metodoPagamentoNessuno, metodoPagamentoSelezionato])
+    builderState.cliente = clienteSelezionato
+      ? {
+          id: clienteSelezionato.id,
+          nome: clienteSelezionato.nome,
+          telefono: clienteSelezionato.telefono ?? null,
+          email: clienteSelezionato.email ?? null,
+          indirizzo: clienteSelezionato.indirizzo ?? null,
+        }
+      : null
+  }, [voci, nomeCliente, noteExtra, includiIva, trasferte, mostraTrasferte, nuovaSpesaNome, nuovaSpesaImporto, nuoviKm, scontoAttivo, scontoTipo, scontoValore, abbonamentoAttivo, abImporto, abGiorno, abMeseInizio, abMensilita, abVisibileNelPDF, pagamentoRateAttivo, rateNumero, rateGiornoScadenza, rateMeseInizio, rateVisibileNelPDF, metodoPagamentoNessuno, metodoPagamentoSelezionato, clienteSelezionato])
+
+  useFocusEffect(
+    useCallback(() => {
+      if (primoFocusBuilderRef.current) {
+        primoFocusBuilderRef.current = false
+        return
+      }
+
+      const bs = builderState
+      const bsClienteId = bs.cliente?.id ?? null
+
+      setClienteSelezionato((prev) => {
+        const prevId = prev?.id ?? null
+        if (prevId === bsClienteId) return prev
+        if (!bs.cliente) return null
+        return {
+          id: bs.cliente.id,
+          nome: bs.cliente.nome,
+          telefono: bs.cliente.telefono,
+          email: bs.cliente.email,
+          indirizzo: bs.cliente.indirizzo,
+        }
+      })
+
+      setMetodoPagamentoNessuno((prev) =>
+        prev === bs.metodoPagamentoNessuno ? prev : bs.metodoPagamentoNessuno,
+      )
+      if (bs.metodoPagamentoNessuno) {
+        setMetodoPagamentoSelezionato((prev: any | null) => (prev === null ? prev : null))
+      } else {
+        setMetodoPagamentoSelezionato((prev: any | null) => {
+          const prevId = prev?.id ?? null
+          if (prevId === bs.metodoPagamentoId) return prev
+          if (!bs.metodoPagamentoId) return null
+          return metodiPagamento.find((m) => m.id === bs.metodoPagamentoId) ?? null
+        })
+      }
+
+      setAbbonamentoAttivo((prev) => (prev === bs.abbonamentoAttivo ? prev : bs.abbonamentoAttivo))
+      setAbImporto((prev) => (prev === bs.abImporto ? prev : bs.abImporto))
+      setAbGiorno((prev) => (prev === bs.abGiorno ? prev : bs.abGiorno))
+      setAbMeseInizio((prev) => (prev === bs.abMeseInizio ? prev : bs.abMeseInizio))
+      setAbMensilita((prev) => (prev === bs.abMensilita ? prev : bs.abMensilita))
+      setAbVisibileNelPDF((prev) => (prev === bs.abVisibileNelPDF ? prev : bs.abVisibileNelPDF))
+
+      setPagamentoRateAttivo((prev) => (prev === bs.pagamentoRateAttivo ? prev : bs.pagamentoRateAttivo))
+      setRateNumero((prev) => (prev === bs.rateNumero ? prev : bs.rateNumero))
+      setRateGiornoScadenza((prev) => (prev === bs.rateGiornoScadenza ? prev : bs.rateGiornoScadenza))
+      setRateMeseInizio((prev) => (prev === bs.rateMeseInizio ? prev : bs.rateMeseInizio))
+      setRateVisibileNelPDF((prev) => (prev === bs.rateVisibileNelPDF ? prev : bs.rateVisibileNelPDF))
+    }, [metodiPagamento]),
+  )
 
   useEffect(() => {
     const reset = () => ripristina()
