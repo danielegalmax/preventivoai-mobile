@@ -231,7 +231,7 @@ export default function PreventivoPDF() {
     if (!token || !testo) return
     if (previewTimeout.current) clearTimeout(previewTimeout.current)
     previewTimeout.current = setTimeout(() => aggiornaPreview(), 300)
-  }, [template, token, testo, clienteSelezionato, nascondiPrezzi, metodoPagamentoSelezionato, metodoPagamentoNessuno, abbonamentoAttivo, abImporto, abGiorno, abMeseInizio, abVisibileNelPDF, pagamentoRateAttivo, rateNumero, rateGiornoScadenza, rateMeseInizio, rateVisibileNelPDF, importo_totale])
+  }, [template, token, testo, clienteSelezionato, nascondiPrezzi, metodoPagamentoSelezionato, metodoPagamentoNessuno, abbonamentoAttivo, abImporto, abGiorno, abMeseInizio, abMensilita, abVisibileNelPDF, pagamentoRateAttivo, rateNumero, rateGiornoScadenza, rateMeseInizio, rateVisibileNelPDF, importo_totale])
 
   function onChangeAbbonamentoAttivo(v: boolean) {
     if (!v) {
