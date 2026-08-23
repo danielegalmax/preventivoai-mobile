@@ -49,8 +49,8 @@ function badgeCanone(stato: RataAbbonamento['stato']) {
   return { label: 'Da incassare', bg: '#F3F4F6', color: '#6B7280' }
 }
 
-function ordinaRateRecenti(a: RataAbbonamento, b: RataAbbonamento) {
-  return b.anno - a.anno || b.mese - a.mese
+function ordinaRateCronologica(a: RataAbbonamento, b: RataAbbonamento) {
+  return a.anno - b.anno || a.mese - b.mese
 }
 
 function percentWidth(value: number): DimensionValue {
@@ -288,7 +288,7 @@ function AbbonamentoPianoCard({
   const rataMeseCorrente = rate.find(r => r.mese === meseCorrente && r.anno === annoCorrente)
   const rateStoriche = rate.filter(r => !(r.mese === meseCorrente && r.anno === annoCorrente))
   const rateStoricheOrdinate = useMemo(
-    () => [...rateStoriche].sort(ordinaRateRecenti),
+    () => [...rateStoriche].sort(ordinaRateCronologica),
     [rateStoriche],
   )
   const totaleIncassato = totaleIncassatoPiano(rate)
